@@ -1,0 +1,18 @@
+
+h1 {
+  font-family: var(--vscode-editor-font-family);
+}
+
+.app {
+  margin: 15px auto;
+  max-width: 80rem;
+}
+
+.app__actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.app__error {
+  color: var(--vscode-editorError-foreground);
+}
