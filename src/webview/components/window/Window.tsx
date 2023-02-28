@@ -1,16 +1,19 @@
 import React = require("react");
 import styled from "styled-components";
-import { VSCodeButton } from '@vscode/webview-ui-toolkit/react';
 import { Close } from "../close";
+import MonacoEditor from "@monaco-editor/react";
 
 interface WindowProps {
+  key: string;
   title: string;
+  content: string;
+  fileType: string;
 }
 
-const Window = ({ title }: WindowProps) => {
+const Window = ({ key, title, content, fileType }: WindowProps) => {
 
   return (
-    <Container>
+    <Container id={key} onMouseDown={e => e.stopPropagation()}>
       <Header>
         <Tab>
           <Title>{ title }</Title>
@@ -19,6 +22,18 @@ const Window = ({ title }: WindowProps) => {
           </CloseIcon>
         </Tab>
       </Header>
+      <Editor
+        theme="vs-dark"
+        defaultLanguage={fileType}
+        defaultValue={content}
+        options={
+         { 
+          minimap: {
+            enabled: false
+          }
+        }
+        }
+      />
     </Container>
   );
 };
@@ -26,9 +41,11 @@ const Window = ({ title }: WindowProps) => {
 const Container = styled.div`
   position: relative;
   background-color: #333333;
-  height: 520px;
-  width: 390px;
+  height: 580px;
+  width: 480px;
   border-radius: 4px;
+  margin: 20px;
+  z-index: 100px;
 `;
 
 const Header = styled.div`
@@ -61,6 +78,15 @@ const CloseIcon = styled.div`
 
 const Title = styled.span`
   padding-left: 8px;
+`;
+
+const Editor = styled(MonacoEditor)`
+  background-color: #333333;
+  padding-top: 8px;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-bottom: 8px;
+  height: 100%;
 `;
 
 export default Window;

@@ -69,6 +69,7 @@
     "webpack-dev-server": "^4.11.1"
   },
   "dependencies": {
+    "@monaco-editor/react": "^4.4.6",
     "@types/styled-components": "^5.1.26",
     "@use-gesture/react": "^10.2.24",
     "@vscode/webview-ui-toolkit": "^1.2.2",
