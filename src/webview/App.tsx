@@ -8,6 +8,7 @@ import React = require('react');
 import { Target, useGesture, useWheel } from '@use-gesture/react';
 import { Window } from './components/window';
 import { mapFiles, supportedTypes } from './utils';
+import InfiniteViewer from 'react-infinite-viewer';
 
 export interface IAppProps {}
 
@@ -77,16 +78,43 @@ export const App: React.FunctionComponent<IAppProps> = ({ }: React.PropsWithChil
     eventOptions: {passive: true}
   });  
 
-  return ( // {...bind()} style={{ cursor }}
-    <Container ref={container} style={{ cursor }}  >
-      <Canvas 
-        scale={scale} 
-        translateX={translateX} 
-        translateY={translateY}
-        originX={originX}
-        originY={originY}
+
+
+  const children = files.map((file, i) => {
+    return (
+      <Window 
+        key={String(i)} 
+        title={file.name} 
+        content={file.content} 
+        fileType={file.type} 
+      />
+    );
+  });
+
+  // const children = asdf.map((window, i) => {
+  //   return (
+  //     <React.Fragment key={i}>
+  //       {window}
+  //     </React.Fragment>
+  //   );
+  // });
+  console.log('files', files);
+  
+  console.log('children', children);
+
+  if (children.length === 0) {
+    return <></>;
+  }
+  
+  return (
+    <Container>
+      <InfiniteViewer 
+        className="viewer" 
+        displayHorizontalScroll={false}
+        displayVerticalScroll={false}
+        useAutoZoom
       >
-        {
+         {/* {
           files.length > 0 && files.map((file, i) => {
             return (
               <Window 
@@ -97,22 +125,97 @@ export const App: React.FunctionComponent<IAppProps> = ({ }: React.PropsWithChil
               />
             );
           })
-        }
-      </Canvas>
+        } */}
+
+        {children}
+        {/* <Window 
+          key={'asd'} 
+          title={'asdf'} 
+          content={'.'} 
+          fileType={'css'} 
+        /> */}
+        {/* <div style={{ backgroundColor: "red", height: 200, width: 200 }}>
+          AA
+        </div> */}
+      </InfiniteViewer>
     </Container>
+    // <Container>
+    //   <SottoContainer>
+    //     <InfiniteViewer className="viewer" style={{height: 200}}>
+    //     <div style={{ backgroundColor: "red", height: 200, width: 200 }}>
+    //           AA
+    //         </div>
+    //       {/* <Asdf>
+    //         AA
+    //       </Asdf> */}
+    //     </InfiniteViewer>
+    //   </SottoContainer>
+
+    // </Container>
   );
+
+  // return ( // {...bind()} style={{ cursor }}
+  //   <Container ref={container} style={{ cursor }}  >
+  //     <Canvas 
+  //       scale={scale} 
+  //       translateX={translateX} 
+  //       translateY={translateY}
+  //       originX={originX}
+  //       originY={originY}
+  //     >
+  //       {
+  //         files.length > 0 && files.map((file, i) => {
+  //           return (
+  //             <Window 
+  //               key={String(i)} 
+  //               title={file.name} 
+  //               content={file.content} 
+  //               fileType={file.type} 
+  //             />
+  //           );
+  //         })
+  //       }
+  //     </Canvas>
+  //   </Container>
+  // );
 };
 
+const Asdf = styled.div`
+  background-color: red;
+  height: 200px;
+  width: 200px;
+`;
+
+const Canvas = styled(InfiniteViewer)`
+  border: 2px solid red;
+`;
+
+const SottoContainer = styled.div`
+  border: solid 1px red;
+  height: 400px;
+  width: 400px;
+`;
 
 const Container = styled.div`
+  display: flex;
+  background-color: white;
   position: fixed;
   height: 100%;
   width: 100%;
   top: 0px;
   left: 0px;
-  background-color: #1e1e1e;
-  touch-action: none;
+  border: 1px solid green;
 `;
+
+// const Container = styled.div`
+//   position: fixed;
+//   height: 100%;
+//   width: 100%;
+//   top: 0px;
+//   left: 0px;
+//   background-color: #1e1e1e;
+//   touch-action: none;
+// `;
 
 interface CanvasProps {
   scale: number;
@@ -122,15 +225,15 @@ interface CanvasProps {
   originY: number;
 }
 
-const Canvas = styled.div<CanvasProps>`
-  position: absolute;
-  will-change: transform;
-  /* transform-origin: 0 0; */
-  transform: 
-    scale(${(props) => props.scale}) 
-    translate(${(props) => props.translateX}px, ${(props) => props.translateY}px);
-  transform-origin: ${(props) => `${props.originX}px ${props.originY}px`};
-`;
+// const Canvas = styled.div<CanvasProps>`
+//   position: absolute;
+//   will-change: transform;
+//   /* transform-origin: 0 0; */
+//   transform: 
+//     scale(${(props) => props.scale}) 
+//     translate(${(props) => props.translateX}px, ${(props) => props.translateY}px);
+//   transform-origin: ${(props) => `${props.originX}px ${props.originY}px`};
+// `;
 
 
 

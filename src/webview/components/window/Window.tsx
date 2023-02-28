@@ -11,9 +11,9 @@ interface WindowProps {
 }
 
 const Window = ({ key, title, content, fileType }: WindowProps) => {
-
+// onMouseDown={e => e.stopPropagation()}
   return (
-    <Container id={key} onMouseDown={e => e.stopPropagation()}>
+    <Container id={key} >
       <Header>
         <Tab>
           <Title>{ title }</Title>

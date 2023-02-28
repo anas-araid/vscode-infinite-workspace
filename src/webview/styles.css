@@ -16,3 +16,10 @@ h1 {
 .app__error {
   color: var(--vscode-editorError-foreground);
 }
+
+.viewer {
+  width: 100%;
+  height: 100%;
+  border: 1px solid red;
+  background-color: #1e1e1e;
+}

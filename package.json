@@ -74,6 +74,7 @@
     "@use-gesture/react": "^10.2.24",
     "@vscode/webview-ui-toolkit": "^1.2.2",
     "fs": "^0.0.1-security",
+    "react-infinite-viewer": "^0.20.0",
     "styled-components": "^5.3.6"
   }
 }
