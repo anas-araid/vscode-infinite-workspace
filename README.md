@@ -1,4 +1,4 @@
-# Visual Studio Code Infinite Worksapce
+# Visual Studio Code Infinite Workspace
 
 ## Development
 
