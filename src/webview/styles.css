@@ -18,8 +18,13 @@ h1 {
 }
 
 .viewer {
+  position: relative;
   width: 100%;
   height: 100%;
-  border: 1px solid red;
+  /* border: 1px solid red; */
   background-color: #1e1e1e;
+}
+
+.moveable-control.moveable-direction {
+  opacity: 0!important;
 }
