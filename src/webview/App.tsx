@@ -26,7 +26,8 @@ export const App: React.FunctionComponent<IAppProps> = ({ }: React.PropsWithChil
   document.addEventListener('gesturechange', (e) => e.preventDefault());
 
   const calcTranslate = (index: number) => {
-    return { transform: `translate(${540 * index}px, 0px)`};
+    //{ transform: `translate(${540 * index}px, 0px)`};
+    return {left: `${540 * index}px`};
   };
 
   const children = files.map((file, i) => {
@@ -36,7 +37,7 @@ export const App: React.FunctionComponent<IAppProps> = ({ }: React.PropsWithChil
         title={file.name} 
         content={file.content} 
         fileType={file.type}
-        // style={calcTranslate(i)}
+        style={calcTranslate(i)}
         onDragStart={() => setCursor('grabbing')}
         onDragEnd={() => setCursor('auto')}
       />
@@ -55,8 +56,9 @@ export const App: React.FunctionComponent<IAppProps> = ({ }: React.PropsWithChil
         displayVerticalScroll={false}
         useAutoZoom={true}
         useWheelScroll={true}
-        useMouseDrag={true}
         wheelPinchKey='ctrl'
+        // disable this if you want select text in editor
+        useMouseDrag={true}
       >
         <div className="viewport">
           {children}

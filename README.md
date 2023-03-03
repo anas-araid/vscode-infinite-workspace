@@ -1,6 +1,6 @@
 ##### ⚠️ Disclaimer
 
-> This is just a work in progress proof of concept. Currently used only for experimental purposes so it's not optimized for production use, yet.
+> This is just a work in progress proof of concept. Currently used only for experimental purposes so it's not optimized for daily use.
 
 # VS Code Infinite Workspace
 
@@ -13,12 +13,15 @@ Prototype built in order to recreate a figma-like canvas experience in Visual St
 - Run `npm run watch` to start developing
 
 ### TODO
-- initial children positioning
+- initial children positioning algorithm
 - close window
 - save file
 - create new file
 - fix z-index/window focus issue
 - on window drag -> decrease scale -> on drag end -> restore scale
+
+### Known issues
+- monaco editor supports only 4 [namespaces](https://microsoft.github.io/monaco-editor/typedoc/modules/languages.html) (html, css, ts, json)
 
 ### Contributing
 If you have any questions or requests or want to contribute, please write an issue or give me a PR freely.

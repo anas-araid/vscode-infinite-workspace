@@ -56,6 +56,7 @@ const Window = ({ key, title, content, fileType, style, onDragStart, onDragEnd }
         onDragStart={() => setFocused(true)} 
         onDragEnd={() => setFocused(false)}
         onClick={() => editorRef.current?.focus()}
+        onDrag={(e) => e.stopPropagation()}
       >
         <Header ref={headerRef}>
           <Tab>
@@ -102,9 +103,10 @@ const Window = ({ key, title, content, fileType, style, onDragStart, onDragEnd }
         onScale={helper.onScale}
         hideChildMoveableDefaultLines={true}
         hideDefaultLines={true}
-        edgeDraggable={true}
         dragTarget={headerRef.current}
         stopPropagation={true}
+        preventClickDefault={true}
+        preventClickEventOnDrag={true}
       />
     </Wrapper>
   );
