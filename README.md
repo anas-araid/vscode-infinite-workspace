@@ -1,5 +1,4 @@
 ##### ⚠️ Disclaimer
-
 > This is just a work in progress proof of concept. Currently used only for experimental purposes so it's not optimized for daily use.
 
 # VS Code Infinite Workspace
