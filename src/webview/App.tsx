@@ -18,6 +18,7 @@ export const App: React.FunctionComponent<IAppProps> = ({ }: React.PropsWithChil
   useEffect(() => {
     messageHandler.request<GetFile[]>(COMMAND.GET_FILES).then((data) => {
       const mappedFiles: CustomFile[] = mapFiles(data);
+      
       setFiles(mappedFiles);
     });
   }, []);

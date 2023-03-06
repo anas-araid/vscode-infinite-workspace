@@ -22,6 +22,7 @@ Prototype built in order to recreate a figma-like canvas experience in Visual St
 
 ### Known issues
 - monaco editor supports only 4 [namespaces](https://microsoft.github.io/monaco-editor/typedoc/modules/languages.html) (html, css, ts, json)
+- cannot read node_modules folder
 
 ### Contributing
 If you have any questions or requests or want to contribute, please write an issue or give me a PR freely.
