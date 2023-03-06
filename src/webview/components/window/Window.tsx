@@ -2,50 +2,124 @@ import React = require("react");
 import styled from "styled-components";
 import { Close } from "../close";
 import MonacoEditor from "@monaco-editor/react";
+import MoveableHelper from "moveable-helper";
+import {
+  makeMoveable,
+  DraggableProps,
+  ScalableProps,
+  RotatableProps,
+  Draggable,
+  Scalable
+} from "react-moveable";
+import { editor } from "monaco-editor";
 
 interface WindowProps {
   key: string;
   title: string;
   content: string;
   fileType: string;
+  style?: React.CSSProperties;
+  onDragStart: () => void;
+  onDragEnd: () => void;
 }
 
-const Window = ({ key, title, content, fileType }: WindowProps) => {
+const Moveable = makeMoveable<DraggableProps & ScalableProps & RotatableProps>([
+  Draggable,
+  Scalable,
+]);
 
+
+const Window = ({ key, title, content, fileType, style, onDragStart, onDragEnd }: WindowProps) => {
+  const [helper] = React.useState(() => {
+    return new MoveableHelper();
+  });
+  const [focused, setFocused] = React.useState(false);
+  const targetRef = React.useRef<HTMLDivElement>(null);
+  const editorRef = React.useRef<any>(null);
+  const headerRef = React.useRef<any>(null);
+
+  const didMount = (editor: editor.IStandaloneCodeEditor) => {
+    setFocused(true);
+    editor.focus();
+    editorRef.current = editor;
+  };
+  
   return (
-    <Container id={key} onMouseDown={e => e.stopPropagation()}>
-      <Header>
-        <Tab>
-          <Title>{ title }</Title>
-          <CloseIcon>
-            <Close />
-          </CloseIcon>
-        </Tab>
-      </Header>
-      <Editor
-        theme="vs-dark"
-        defaultLanguage={fileType}
-        defaultValue={content}
-        options={
-         { 
-          minimap: {
-            enabled: false
+    <Wrapper>
+      <Container 
+        ref={targetRef}
+        id={key} 
+        className="viewport" 
+        style={{...style, zIndex: focused ? '999' : '1'}}
+        onMouseDown={() => setFocused(true)} 
+        onMouseOut={() => setFocused(false)}
+        onDragStart={() => setFocused(true)} 
+        onDragEnd={() => setFocused(false)}
+        onClick={() => editorRef.current?.focus()}
+        onDrag={(e) => e.stopPropagation()}
+      >
+        <Header ref={headerRef}>
+          <Tab>
+            <Title>{ title }</Title>
+            <CloseIcon>
+              <Close />
+            </CloseIcon>
+          </Tab>
+        </Header>
+        <Editor
+          theme="vs-dark"
+          onMount={ (editor) => didMount(editor)}
+          defaultLanguage={fileType}
+          defaultValue={content}
+          height={580}
+          width={480}
+          options={
+          { 
+            minimap: {
+              enabled: false
+            },
+            tabFocusMode: true,
+            readOnly: false,
+            peekWidgetDefaultFocus: 'editor',
           }
+          }
+        />
+
+      </Container>
+      <Moveable
+        target={targetRef}
+        draggable={true}
+        scalable={true}
+        keepRatio={true}
+        onDragStart={
+          (e) => {
+            onDragStart();
+            helper.onDragStart(e);
+          } 
         }
-        }
+        onDragEnd={() => onDragEnd()}
+        onDrag={helper.onDrag}
+        onScaleStart={helper.onScaleStart}
+        onScale={helper.onScale}
+        hideChildMoveableDefaultLines={true}
+        hideDefaultLines={true}
+        dragTarget={headerRef.current}
+        stopPropagation={true}
+        preventClickDefault={true}
+        preventClickEventOnDrag={true}
       />
-    </Container>
+    </Wrapper>
   );
 };
 
+const Wrapper = styled.div``;
+
 const Container = styled.div`
-  position: relative;
+  position: absolute;
+  /* border: 1px solid red; */
   background-color: #333333;
-  height: 580px;
-  width: 480px;
   border-radius: 4px;
   margin: 20px;
-  z-index: 100px;
 `;
 
 const Header = styled.div`
@@ -63,6 +137,7 @@ const Tab = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 8px;
 `;
 
 const CloseIcon = styled.div`
@@ -86,7 +161,7 @@ const Editor = styled(MonacoEditor)`
   padding-left: 8px;
   padding-right: 8px;
   padding-bottom: 8px;
-  height: 100%;
+  /* border: 1px solid yellow; */
 `;
 
 export default Window;

@@ -10,14 +10,17 @@ import { GetFile } from './types';
 
 export function activate(context: vscode.ExtensionContext) {
 
-	let disposable = vscode.commands.registerCommand('vscode-infinite-workspace.openWebview', () => {
+	const registerCommand = vscode.commands.registerCommand('vscode-infinite-workspace.openWebview', () => {
+		const config = vscode.workspace.getConfiguration();
+		config.update("workbench.editor.showTabs", false, vscode.ConfigurationTarget.Global);
+
 		const panel = vscode.window.createWebviewPanel(
 			'infinite-workspace',
 			'',
 			vscode.ViewColumn.One,
 			{
 				enableScripts: true,
-				retainContextWhenHidden: true
+				retainContextWhenHidden: true,
 			}
 		);
 
@@ -73,7 +76,14 @@ export function activate(context: vscode.ExtensionContext) {
 		panel.webview.html = getWebviewContent(context, panel.webview);
 	});
 
-	context.subscriptions.push(disposable);
+	const onClose = vscode.window.onDidCloseTerminal(() => {
+		console.log('onDidCloseTerminal');
+		
+		const config = vscode.workspace.getConfiguration();
+		config.update("workbench.editor.showTabs", true, vscode.ConfigurationTarget.Global);
+	});
+
+	context.subscriptions.push(registerCommand, onClose);
 }
 
 // this method is called when your extension is deactivated
