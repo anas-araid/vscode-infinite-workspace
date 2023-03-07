@@ -76,6 +76,25 @@ export function activate(context: vscode.ExtensionContext) {
 		panel.webview.html = getWebviewContent(context, panel.webview);
 	});
 
+	const quickPick = vscode.commands.registerCommand('vscode-infinite-workspace.quickInput', async () => {
+		// const options: { [key: string]: (context: ExtensionContext) => Promise<void> } = {
+		// 	showQuickPick,
+		// 	showInputBox,
+		// 	multiStepInput,
+		// 	quickOpen,
+		// };
+		const quickPick = vscode.window.createQuickPick();
+		// quickPick.items = Object.keys(options).map(label => ({ label }));
+		// quickPick.onDidChangeSelection(selection => {
+		// 	if (selection[0]) {
+		// 		options[selection[0].label](context)
+		// 			.catch(console.error);
+		// 	}
+		// });
+		quickPick.onDidHide(() => quickPick.dispose());
+		quickPick.show();
+	});
+
 	const onClose = vscode.window.onDidCloseTerminal(() => {
 		console.log('onDidCloseTerminal');
 		
@@ -83,7 +102,7 @@ export function activate(context: vscode.ExtensionContext) {
 		config.update("workbench.editor.showTabs", true, vscode.ConfigurationTarget.Global);
 	});
 
-	context.subscriptions.push(registerCommand, onClose);
+	context.subscriptions.push(registerCommand, quickPick, onClose);
 }
 
 // this method is called when your extension is deactivated

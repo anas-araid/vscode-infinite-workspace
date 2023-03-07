@@ -8,6 +8,7 @@ import React = require('react');
 import { Window } from './components/window';
 import { mapFiles } from './utils';
 import InfiniteViewer from 'react-infinite-viewer';
+// import { Menu } from './components/menu';
 
 export interface IAppProps {}
 
@@ -63,6 +64,7 @@ export const App: React.FunctionComponent<IAppProps> = ({ }: React.PropsWithChil
       >
         <div className="viewport">
           {children}
+          {/* <Menu /> */}
         </div>
       </InfiniteViewer>
     </Container>
