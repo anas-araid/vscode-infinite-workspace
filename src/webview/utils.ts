@@ -41,3 +41,18 @@ export const calcTranslate = (index: number) => {
   //{ transform: `translate(${540 * index}px, 0px)`};
   return { left: `${540 * index}px` };
 };
+
+export const fileWindowPosition = (fileWindow: HTMLElement) => {
+  const left = parseInt(fileWindow.style.left, 10);
+  const style = window.getComputedStyle(fileWindow);
+  const translate = new WebKitCSSMatrix(style.webkitTransform);
+  const translateX = Math.round(translate.m41) ?? 0;
+  const translateY = Math.round(translate.m42) ?? 0;
+
+  const x = left + translateX;
+  const y = translateY;
+  return {
+    x,
+    y,
+  };
+};

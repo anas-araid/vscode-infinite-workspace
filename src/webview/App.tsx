@@ -6,7 +6,7 @@ import { CustomFile, GetFile, MenuItem } from '../types';
 import styled from 'styled-components';
 import React = require('react');
 import { Window } from './components/window';
-import { calcTranslate, mapFiles } from './utils';
+import { calcTranslate, fileWindowPosition, mapFiles } from './utils';
 import InfiniteViewer from 'react-infinite-viewer';
 import useContextMenu from 'use-context-menu';
 import { Menu } from './components/menu';
@@ -15,6 +15,7 @@ export interface IAppProps { }
 
 export const App: React.FunctionComponent<IAppProps> = ({ }: React.PropsWithChildren<IAppProps>) => {
   const menu = React.useRef(null);
+  const infiniteViewer = React.useRef<InfiniteViewer | null>(null);
   const { document: doc } = useContextMenu({ menu });
 
   const [cursor, setCursor] = React.useState('auto');
@@ -26,31 +27,33 @@ export const App: React.FunctionComponent<IAppProps> = ({ }: React.PropsWithChil
 
       setFiles(mappedFiles);
     });
+
     document.addEventListener('contextmenu', (e) => {
       e.preventDefault();
     });
+
     window.addEventListener('message', event => {
-      const message = event.data;
+      const postMessage = event.data;
 
-      if (message.command === COMMAND.SEARCH) {
-        // do something with the data
-        console.log('event', event);
-
+      if (postMessage.command === COMMAND.SEARCH) {
+        const file = postMessage.payload as CustomFile;
+        const fileWindow = document.getElementById(file.path);
+        if (fileWindow) {
+          const { x, y } = fileWindowPosition(fileWindow);
+          if (infiniteViewer.current) {
+            infiniteViewer?.current.scrollTo(x, y, {
+              duration: 350
+            });
+          }
+        }
       }
     });
   }, []);
 
-  // document.addEventListener('gesturestart', (e) => e.preventDefault());
-  // document.addEventListener('gesturechange', (e) => e.preventDefault());
-
   const handleOnMenuClick = (item: MenuItem) => {
-    console.log('item', item);
     switch (item.value) {
       case COMMAND.SEARCH:
         messageHandler.send(COMMAND.SEARCH, { data: files });
-        // messageHandler.request<string>(COMMAND.SEARCH).then((data) => {
-        //   console.log('data', data);
-        // });
         return;
       case COMMAND.CREATE_FILE:
         // do things
@@ -61,7 +64,7 @@ export const App: React.FunctionComponent<IAppProps> = ({ }: React.PropsWithChil
   const children = files.map((file, i) => {
     return (
       <Window
-        key={String(i)}
+        containerId={file.path}
         title={file.name}
         content={file.content}
         fileType={file.type}
@@ -79,6 +82,7 @@ export const App: React.FunctionComponent<IAppProps> = ({ }: React.PropsWithChil
   return (
     <Container style={{ cursor }}>
       <InfiniteViewer
+        ref={infiniteViewer}
         className="viewer"
         displayHorizontalScroll={false}
         displayVerticalScroll={false}
@@ -86,7 +90,7 @@ export const App: React.FunctionComponent<IAppProps> = ({ }: React.PropsWithChil
         useWheelScroll={true}
         wheelPinchKey='ctrl'
         // disable this if you want select text in editor
-        useMouseDrag={true}
+        useMouseDrag={false}
       >
         <div className="viewport">
           {children}

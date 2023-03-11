@@ -7,7 +7,6 @@ import { MessageHandlerData } from "@estruyf/vscode";
 import { COMMAND } from "./webview/constants";
 import * as fs from "fs";
 import { CustomFile, GetFile } from "./types";
-import { pickFile } from "./utils";
 
 export function activate(context: vscode.ExtensionContext) {
   const registerCommand = vscode.commands.registerCommand(
@@ -70,7 +69,6 @@ export function activate(context: vscode.ExtensionContext) {
 
               const result = await vscode.window.showQuickPick(items, {
                 placeHolder: "Type to search for files",
-                onDidSelectItem: (item) => console.log("item", item),
               });
 
               if (result) {

@@ -14,7 +14,7 @@ import {
 import { editor } from "monaco-editor";
 
 interface WindowProps {
-  key: string;
+  containerId: string;
   title: string;
   content: string;
   fileType: string;
@@ -29,7 +29,7 @@ const Moveable = makeMoveable<DraggableProps & ScalableProps & RotatableProps>([
 ]);
 
 
-const Window = ({ key, title, content, fileType, style, onDragStart, onDragEnd }: WindowProps) => {
+const Window = ({ containerId, title, content, fileType, style, onDragStart, onDragEnd }: WindowProps) => {
   const [helper] = React.useState(() => {
     return new MoveableHelper();
   });
@@ -43,24 +43,31 @@ const Window = ({ key, title, content, fileType, style, onDragStart, onDragEnd }
     editor.focus();
     editorRef.current = editor;
   };
-  
+
   return (
-    <Wrapper>
-      <Container 
+    <Wrapper
+      onMouseOut={() => setFocused(false)}
+      onMouseDown={() => setFocused(true)}
+      onDragEnd={() => setFocused(false)}
+      onClick={() => {
+        setFocused(true);
+        editorRef.current?.focus();
+      }}
+      onDrag={(e) => {
+        setFocused(true);
+        e.stopPropagation();
+      }}
+    >
+      <Container
+        id={containerId}
         ref={targetRef}
-        id={key} 
-        className="viewport" 
-        style={{...style, zIndex: focused ? '999' : '1'}}
-        onMouseDown={() => setFocused(true)} 
-        onMouseOut={() => setFocused(false)}
-        onDragStart={() => setFocused(true)} 
-        onDragEnd={() => setFocused(false)}
-        onClick={() => editorRef.current?.focus()}
-        onDrag={(e) => e.stopPropagation()}
+        className="viewport"
+        style={{ ...style, zIndex: focused ? '999' : '1' }}
+
       >
         <Header ref={headerRef}>
           <Tab>
-            <Title>{ title }</Title>
+            <Title>{title}</Title>
             <CloseIcon>
               <Close />
             </CloseIcon>
@@ -68,23 +75,22 @@ const Window = ({ key, title, content, fileType, style, onDragStart, onDragEnd }
         </Header>
         <Editor
           theme="vs-dark"
-          onMount={ (editor) => didMount(editor)}
+          onMount={(editor) => didMount(editor)}
           defaultLanguage={fileType}
           defaultValue={content}
           height={580}
           width={480}
           options={
-          { 
-            minimap: {
-              enabled: false
-            },
-            tabFocusMode: true,
-            readOnly: false,
-            peekWidgetDefaultFocus: 'editor',
-          }
+            {
+              minimap: {
+                enabled: false
+              },
+              tabFocusMode: true,
+              readOnly: false,
+              peekWidgetDefaultFocus: 'editor',
+            }
           }
         />
-
       </Container>
       <Moveable
         target={targetRef}
@@ -95,12 +101,18 @@ const Window = ({ key, title, content, fileType, style, onDragStart, onDragEnd }
           (e) => {
             onDragStart();
             helper.onDragStart(e);
-          } 
+          }
         }
+        onDrag={(e) => {
+          setFocused(true);
+          helper.onDrag(e);
+        }}
         onDragEnd={() => onDragEnd()}
-        onDrag={helper.onDrag}
         onScaleStart={helper.onScaleStart}
-        onScale={helper.onScale}
+        onScale={(e) => {
+          setFocused(true);
+          helper.onScale(e);
+        }}
         hideChildMoveableDefaultLines={true}
         hideDefaultLines={true}
         dragTarget={headerRef.current}

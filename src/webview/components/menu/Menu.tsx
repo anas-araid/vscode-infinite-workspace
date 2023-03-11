@@ -34,7 +34,7 @@ export const Container = styled.ul`
     color: #fff;
     padding: 10px 18px;
     text-align: left;
-    font-size: 12px;
+    font-size: 13px;
     &:hover {
       background: #4e4e4e;
       /* color: #333333; */
