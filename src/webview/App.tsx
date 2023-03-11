@@ -1,43 +1,69 @@
 import { useEffect } from 'react';
 import { messageHandler } from '@estruyf/vscode/dist/client';
 import "./styles.css";
-import { COMMAND } from './constants';
-import { CustomFile, GetFile } from '../types';
+import { COMMAND, MENU_ITEMS } from './constants';
+import { CustomFile, GetFile, MenuItem } from '../types';
 import styled from 'styled-components';
 import React = require('react');
 import { Window } from './components/window';
-import { mapFiles } from './utils';
+import { calcTranslate, mapFiles } from './utils';
 import InfiniteViewer from 'react-infinite-viewer';
-// import { Menu } from './components/menu';
+import useContextMenu from 'use-context-menu';
+import { Menu } from './components/menu';
 
-export interface IAppProps {}
+export interface IAppProps { }
 
 export const App: React.FunctionComponent<IAppProps> = ({ }: React.PropsWithChildren<IAppProps>) => {
+  const menu = React.useRef(null);
+  const { document: doc } = useContextMenu({ menu });
+
   const [cursor, setCursor] = React.useState('auto');
   const [files, setFiles] = React.useState<CustomFile[]>([]);
 
   useEffect(() => {
     messageHandler.request<GetFile[]>(COMMAND.GET_FILES).then((data) => {
       const mappedFiles: CustomFile[] = mapFiles(data);
-      
+
       setFiles(mappedFiles);
+    });
+    document.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+    });
+    window.addEventListener('message', event => {
+      const message = event.data;
+
+      if (message.command === COMMAND.SEARCH) {
+        // do something with the data
+        console.log('event', event);
+
+      }
     });
   }, []);
 
-  document.addEventListener('gesturestart', (e) => e.preventDefault());
-  document.addEventListener('gesturechange', (e) => e.preventDefault());
+  // document.addEventListener('gesturestart', (e) => e.preventDefault());
+  // document.addEventListener('gesturechange', (e) => e.preventDefault());
 
-  const calcTranslate = (index: number) => {
-    //{ transform: `translate(${540 * index}px, 0px)`};
-    return {left: `${540 * index}px`};
+  const handleOnMenuClick = (item: MenuItem) => {
+    console.log('item', item);
+    switch (item.value) {
+      case COMMAND.SEARCH:
+        messageHandler.send(COMMAND.SEARCH, { data: files });
+        // messageHandler.request<string>(COMMAND.SEARCH).then((data) => {
+        //   console.log('data', data);
+        // });
+        return;
+      case COMMAND.CREATE_FILE:
+        // do things
+        return;
+    }
   };
 
   const children = files.map((file, i) => {
     return (
-      <Window 
-        key={String(i)} 
-        title={file.name} 
-        content={file.content} 
+      <Window
+        key={String(i)}
+        title={file.name}
+        content={file.content}
         fileType={file.type}
         style={calcTranslate(i)}
         onDragStart={() => setCursor('grabbing')}
@@ -49,11 +75,11 @@ export const App: React.FunctionComponent<IAppProps> = ({ }: React.PropsWithChil
   if (children.length === 0) {
     return <></>;
   }
-  
+
   return (
-    <Container style={{cursor}}>
-      <InfiniteViewer 
-        className="viewer" 
+    <Container style={{ cursor }}>
+      <InfiniteViewer
+        className="viewer"
         displayHorizontalScroll={false}
         displayVerticalScroll={false}
         useAutoZoom={true}
@@ -66,6 +92,10 @@ export const App: React.FunctionComponent<IAppProps> = ({ }: React.PropsWithChil
           {children}
           {/* <Menu /> */}
         </div>
+        {doc?.isOpen && (
+          <Menu ref={menu} items={MENU_ITEMS} onClick={handleOnMenuClick}></Menu>
+        )}
+
       </InfiniteViewer>
     </Container>
   );
@@ -81,28 +111,28 @@ const Container = styled.div`
   left: 0px;
 `;
 
- // const [message, setMessage] = React.useState<string>("");
-  // const [error, setError] = React.useState<string>("");
+// const [message, setMessage] = React.useState<string>("");
+// const [error, setError] = React.useState<string>("");
 
-  // const sendMessage = () => {
-  //   messageHandler.send('POST_DATA', { msg: 'Hello from the webview' });
-  // };
+// const sendMessage = () => {
+//   messageHandler.send('POST_DATA', { msg: 'Hello from the webview' });
+// };
 
-  // const requestData = () => {
-  //   messageHandler.request<string>('GET_DATA').then((msg) => {
-  //     setMessage(msg);
-  //   });
-  // };
+// const requestData = () => {
+//   messageHandler.request<string>('GET_DATA').then((msg) => {
+//     setMessage(msg);
+//   });
+// };
 
-  // const requestWithErrorData = () => {
-  //   messageHandler.request<string>('GET_DATA_ERROR')
-  //   .then((msg) => {
-  //     setMessage(msg);
-  //   })
-  //   .catch((err) => {
-  //     setError(err);
-  //   });
-  // };
+// const requestWithErrorData = () => {
+//   messageHandler.request<string>('GET_DATA_ERROR')
+//   .then((msg) => {
+//     setMessage(msg);
+//   })
+//   .catch((err) => {
+//     setError(err);
+//   });
+// };
 
 
 

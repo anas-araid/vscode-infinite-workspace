@@ -36,7 +36,6 @@
       }
     ]
   },
-  
   "scripts": {
     "vscode:prepublish": "npm run package",
     "compile": "webpack",
@@ -90,6 +89,7 @@
     "moveable-helper": "^0.4.0",
     "react-infinite-viewer": "^0.20.0",
     "react-moveable": "^0.46.1",
-    "styled-components": "^5.3.6"
+    "styled-components": "^5.3.6",
+    "use-context-menu": "^0.2.1"
   }
 }
