@@ -13,8 +13,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:vscode-infinite-workspace.openWebview",
-    "onCommand:vscode-infinite-workspace.quickPick"
+    "onCommand:vscode-infinite-workspace.openWebview"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -22,17 +21,6 @@
       {
         "command": "vscode-infinite-workspace.openWebview",
         "title": "Toggle Infinite Canvas"
-      },
-      {
-        "command": "vscode-infinite-workspace.quickPick",
-        "title": "Toggle Infinite Canvas Quick Pick"
-      }
-    ],
-    "keybindings": [
-      {
-        "command": "vscode-infinite-workspace.quickPick",
-        "key": "cmd+k",
-        "mac": "cmd+k"
       }
     ]
   },
