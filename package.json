@@ -3,8 +3,10 @@
   "displayName": "vscode-infinite-workspace",
   "description": "",
   "version": "0.0.1",
+  "icon": "assets/icon.png",
   "repository": {
-    "type": "git"
+    "type": "git",
+    "url": "https://github.com/anas-araid/vscode-infinite-workspace"
   },
   "engines": {
     "vscode": "^1.71.0"
@@ -22,7 +24,18 @@
         "command": "vscode-infinite-workspace.openWebview",
         "title": "Toggle Infinite Canvas"
       }
-    ]
+    ],
+    "views": {
+      "vscode-infinite-workspace": [
+        {
+          "id": "",
+          "name": "",
+          "media": {
+            "iconPath": "assets/icon.png"
+          }
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
@@ -75,7 +88,7 @@
     "@vscode/webview-ui-toolkit": "^1.2.2",
     "fs": "^0.0.1-security",
     "moveable-helper": "^0.4.0",
-    "react-infinite-viewer": "^0.20.0",
+    "react-infinite-viewer": "^0.21.1",
     "react-moveable": "^0.46.1",
     "styled-components": "^5.3.6",
     "use-context-menu": "^0.2.1"
