@@ -7,6 +7,7 @@ import { MessageHandlerData } from "@estruyf/vscode";
 import { COMMAND } from "./webview/constants";
 import * as fs from "fs";
 import { CustomFile, GetFile } from "./types";
+import path = require("path");
 
 export function activate(context: vscode.ExtensionContext) {
   const registerCommand = vscode.commands.registerCommand(
@@ -29,88 +30,96 @@ export function activate(context: vscode.ExtensionContext) {
         }
       );
 
-      panel.webview.onDidReceiveMessage(
-        async (message) => {
-          const { command, requestId, payload } = message;
+      (panel.iconPath = {
+        light: vscode.Uri.file(
+          path.join(context.extensionPath, "assets", "icon.png")
+        ),
+        dark: vscode.Uri.file(
+          path.join(context.extensionPath, "assets", "icon.png")
+        ),
+      }),
+        panel.webview.onDidReceiveMessage(
+          async (message) => {
+            const { command, requestId, payload } = message;
 
-          switch (command) {
-            case COMMAND.GET_FILES:
-              const files = await vscode.workspace.findFiles(
-                "**/*.*",
-                "**/node_modules/**"
-              );
-              let data: GetFile[] = [];
-              if (files.length > 0) {
-                files.forEach((file) => {
-                  data.push({
-                    path: file.path,
-                    content: fs.readFileSync(file.path).toString(),
-                  });
-                });
-
-                panel.webview.postMessage({
-                  command,
-                  requestId,
-                  payload: data,
-                } as MessageHandlerData<GetFile[]>);
-              }
-
-              break;
-            case COMMAND.SEARCH:
-              const fileList = payload.data as CustomFile[];
-
-              const items: vscode.QuickPickItem[] =
-                fileList.length > 0
-                  ? fileList.map((file) => ({
-                      label: file.name,
-                      description: file.path,
-                    }))
-                  : [];
-
-              const result = await vscode.window.showQuickPick(items, {
-                placeHolder: "Type to search for files",
-              });
-
-              if (result) {
-                const selectedItem = fileList.find(
-                  (file) => file.path === result.description
+            switch (command) {
+              case COMMAND.GET_FILES:
+                const files = await vscode.workspace.findFiles(
+                  "**/*.*",
+                  "**/node_modules/**"
                 );
-                if (selectedItem) {
+                let data: GetFile[] = [];
+                if (files.length > 0) {
+                  files.forEach((file) => {
+                    data.push({
+                      path: file.path,
+                      content: fs.readFileSync(file.path).toString(),
+                    });
+                  });
+
                   panel.webview.postMessage({
                     command,
                     requestId,
-                    payload: selectedItem,
-                  });
+                    payload: data,
+                  } as MessageHandlerData<GetFile[]>);
                 }
-              }
-            default:
-              break;
-          }
 
-          // if (command === "GET_DATA") {
-          //   // Do something with the payload
+                break;
+              case COMMAND.SEARCH:
+                const fileList = payload.data as CustomFile[];
 
-          //   // Send a response back to the webview
-          //   panel.webview.postMessage({
-          //     command,
-          //     requestId, // The requestId is used to identify the response
-          //     payload: `Hello from the extension!`,
-          //   } as MessageHandlerData<string>);
-          // } else if (command === "GET_DATA_ERROR") {
-          //   panel.webview.postMessage({
-          //     command,
-          //     requestId, // The requestId is used to identify the response
-          //     error: `Oops, something went wrong!`,
-          //   } as MessageHandlerData<string>);
-          // } else if (command === "POST_DATA") {
-          //   vscode.window.showInformationMessage(
-          //     `Received data from the webview: ${payload.msg}`
-          //   );
-          // }
-        },
-        undefined,
-        context.subscriptions
-      );
+                const items: vscode.QuickPickItem[] =
+                  fileList.length > 0
+                    ? fileList.map((file) => ({
+                        label: file.name,
+                        description: file.path,
+                      }))
+                    : [];
+
+                const result = await vscode.window.showQuickPick(items, {
+                  placeHolder: "Type to search for files",
+                });
+
+                if (result) {
+                  const selectedItem = fileList.find(
+                    (file) => file.path === result.description
+                  );
+                  if (selectedItem) {
+                    panel.webview.postMessage({
+                      command,
+                      requestId,
+                      payload: selectedItem,
+                    });
+                  }
+                }
+              default:
+                break;
+            }
+
+            // if (command === "GET_DATA") {
+            //   // Do something with the payload
+
+            //   // Send a response back to the webview
+            //   panel.webview.postMessage({
+            //     command,
+            //     requestId, // The requestId is used to identify the response
+            //     payload: `Hello from the extension!`,
+            //   } as MessageHandlerData<string>);
+            // } else if (command === "GET_DATA_ERROR") {
+            //   panel.webview.postMessage({
+            //     command,
+            //     requestId, // The requestId is used to identify the response
+            //     error: `Oops, something went wrong!`,
+            //   } as MessageHandlerData<string>);
+            // } else if (command === "POST_DATA") {
+            //   vscode.window.showInformationMessage(
+            //     `Received data from the webview: ${payload.msg}`
+            //   );
+            // }
+          },
+          undefined,
+          context.subscriptions
+        );
 
       panel.webview.html = getWebviewContent(context, panel.webview);
     }
