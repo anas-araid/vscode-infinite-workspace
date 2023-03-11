@@ -1,42 +1,72 @@
 import { useEffect } from 'react';
 import { messageHandler } from '@estruyf/vscode/dist/client';
 import "./styles.css";
-import { COMMAND } from './constants';
-import { CustomFile, GetFile } from '../types';
+import { COMMAND, MENU_ITEMS } from './constants';
+import { CustomFile, GetFile, MenuItem } from '../types';
 import styled from 'styled-components';
 import React = require('react');
 import { Window } from './components/window';
-import { mapFiles } from './utils';
+import { calcTranslate, fileWindowPosition, mapFiles } from './utils';
 import InfiniteViewer from 'react-infinite-viewer';
+import useContextMenu from 'use-context-menu';
+import { Menu } from './components/menu';
 
-export interface IAppProps {}
+export interface IAppProps { }
 
 export const App: React.FunctionComponent<IAppProps> = ({ }: React.PropsWithChildren<IAppProps>) => {
+  const menu = React.useRef(null);
+  const infiniteViewer = React.useRef<InfiniteViewer | null>(null);
+  const { document: doc } = useContextMenu({ menu });
+
   const [cursor, setCursor] = React.useState('auto');
   const [files, setFiles] = React.useState<CustomFile[]>([]);
 
   useEffect(() => {
     messageHandler.request<GetFile[]>(COMMAND.GET_FILES).then((data) => {
       const mappedFiles: CustomFile[] = mapFiles(data);
-      
+
       setFiles(mappedFiles);
+    });
+
+    document.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+    });
+
+    window.addEventListener('message', event => {
+      const postMessage = event.data;
+
+      if (postMessage.command === COMMAND.SEARCH) {
+        const file = postMessage.payload as CustomFile;
+        const fileWindow = document.getElementById(file.path);
+        if (fileWindow) {
+          const { x, y } = fileWindowPosition(fileWindow);
+          if (infiniteViewer.current) {
+            infiniteViewer?.current.scrollTo(x, y, {
+              duration: 350
+            });
+          }
+        }
+      }
     });
   }, []);
 
-  document.addEventListener('gesturestart', (e) => e.preventDefault());
-  document.addEventListener('gesturechange', (e) => e.preventDefault());
-
-  const calcTranslate = (index: number) => {
-    //{ transform: `translate(${540 * index}px, 0px)`};
-    return {left: `${540 * index}px`};
+  const handleOnMenuClick = (item: MenuItem) => {
+    switch (item.value) {
+      case COMMAND.SEARCH:
+        messageHandler.send(COMMAND.SEARCH, { data: files });
+        return;
+      case COMMAND.CREATE_FILE:
+        // do things
+        return;
+    }
   };
 
   const children = files.map((file, i) => {
     return (
-      <Window 
-        key={String(i)} 
-        title={file.name} 
-        content={file.content} 
+      <Window
+        containerId={file.path}
+        title={file.name}
+        content={file.content}
         fileType={file.type}
         style={calcTranslate(i)}
         onDragStart={() => setCursor('grabbing')}
@@ -48,22 +78,28 @@ export const App: React.FunctionComponent<IAppProps> = ({ }: React.PropsWithChil
   if (children.length === 0) {
     return <></>;
   }
-  
+
   return (
-    <Container style={{cursor}}>
-      <InfiniteViewer 
-        className="viewer" 
+    <Container style={{ cursor }}>
+      <InfiniteViewer
+        ref={infiniteViewer}
+        className="viewer"
         displayHorizontalScroll={false}
         displayVerticalScroll={false}
         useAutoZoom={true}
         useWheelScroll={true}
         wheelPinchKey='ctrl'
         // disable this if you want select text in editor
-        useMouseDrag={true}
+        useMouseDrag={false}
       >
         <div className="viewport">
           {children}
+          {/* <Menu /> */}
         </div>
+        {doc?.isOpen && (
+          <Menu ref={menu} items={MENU_ITEMS} onClick={handleOnMenuClick}></Menu>
+        )}
+
       </InfiniteViewer>
     </Container>
   );
@@ -79,28 +115,28 @@ const Container = styled.div`
   left: 0px;
 `;
 
- // const [message, setMessage] = React.useState<string>("");
-  // const [error, setError] = React.useState<string>("");
+// const [message, setMessage] = React.useState<string>("");
+// const [error, setError] = React.useState<string>("");
 
-  // const sendMessage = () => {
-  //   messageHandler.send('POST_DATA', { msg: 'Hello from the webview' });
-  // };
+// const sendMessage = () => {
+//   messageHandler.send('POST_DATA', { msg: 'Hello from the webview' });
+// };
 
-  // const requestData = () => {
-  //   messageHandler.request<string>('GET_DATA').then((msg) => {
-  //     setMessage(msg);
-  //   });
-  // };
+// const requestData = () => {
+//   messageHandler.request<string>('GET_DATA').then((msg) => {
+//     setMessage(msg);
+//   });
+// };
 
-  // const requestWithErrorData = () => {
-  //   messageHandler.request<string>('GET_DATA_ERROR')
-  //   .then((msg) => {
-  //     setMessage(msg);
-  //   })
-  //   .catch((err) => {
-  //     setError(err);
-  //   });
-  // };
+// const requestWithErrorData = () => {
+//   messageHandler.request<string>('GET_DATA_ERROR')
+//   .then((msg) => {
+//     setMessage(msg);
+//   })
+//   .catch((err) => {
+//     setError(err);
+//   });
+// };
 
 
 
