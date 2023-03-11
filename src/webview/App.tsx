@@ -89,12 +89,23 @@ export const App: React.FunctionComponent<IAppProps> = ({ }: React.PropsWithChil
         useAutoZoom={true}
         useWheelScroll={true}
         wheelPinchKey='ctrl'
-        // disable this if you want select text in editor
-        useMouseDrag={false}
+        // dragging via mouse wheel
+        useMouseDrag={true}
+        preventWheelClick={false}
+        onDragStart={
+          (e) => {
+            // only allow wheel
+            if (e.inputEvent.button !== 1) {
+              e.stop();
+              return;
+            }
+            setCursor('grabbing');
+          }
+        }
+        onDragEnd={() => setCursor('auto')}
       >
         <div className="viewport">
           {children}
-          {/* <Menu /> */}
         </div>
         {doc?.isOpen && (
           <Menu ref={menu} items={MENU_ITEMS} onClick={handleOnMenuClick}></Menu>

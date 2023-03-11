@@ -15,12 +15,11 @@ Prototype built in order to recreate a figma-like canvas experience in Visual St
 
 ### TODO
 
-- initial children positioning algorithm
+- fix initial window positioning
 - close window
 - save file
 - create new file
 - fix z-index/window focus issue
-- on window drag -> decrease scale -> on drag end -> restore scale
 
 ### Known issues
 
