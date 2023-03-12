@@ -1,7 +1,7 @@
 {
   "name": "vscode-infinite-workspace",
   "displayName": "vscode-infinite-workspace",
-  "description": "",
+  "description": "a figma-like vscode infinite workspace",
   "version": "0.0.1",
   "icon": "assets/icon.png",
   "repository": {
@@ -22,7 +22,7 @@
     "commands": [
       {
         "command": "vscode-infinite-workspace.openWebview",
-        "title": "Toggle Infinite Canvas"
+        "title": "Toggle Infinite Workspace"
       }
     ],
     "views": {
