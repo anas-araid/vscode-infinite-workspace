@@ -2,6 +2,8 @@
 > This is just a work in progress proof of concept. Currently used only for experimental purposes so it's not optimized for daily use.
 
 # VS Code Infinite Workspace
+https://user-images.githubusercontent.com/8178413/224749566-f8f8c318-2def-408b-a1a1-2898ec32db0a.mp4
+
 
 Prototype built in order to recreate a figma-like canvas experience in Visual Studio Code.
 
